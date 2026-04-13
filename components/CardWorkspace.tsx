@@ -18,6 +18,7 @@ import {
 } from "@/lib/pet-composite-layout";
 import type { CardBackgroundParam } from "@/lib/sdxl-prompt";
 import { coerceBackgroundType } from "@/lib/sdxl-prompt";
+import { shrinkPhotoForPetPipeline, shrinkPngBlobForUpload } from "@/lib/client-image-shrink";
 import { getStyleById } from "@/lib/styles";
 
 type LoadingKey = null | "remove" | "composite" | "existing";
@@ -105,8 +106,9 @@ export function CardWorkspace({ tagId, ownerKey }: Props) {
     setFinalImageUrl(null);
     setComposite(DEFAULT_PET_COMPOSITE);
     try {
+      const prepared = await shrinkPhotoForPetPipeline(file);
       const tryApi = new FormData();
-      tryApi.append("raw", file);
+      tryApi.append("raw", prepared);
       tryApi.append("tagId", tagId);
       const rb = await fetch("/api/pet/remove-bg", { method: "POST", body: tryApi });
       const jd = (await rb.json().catch(() => ({}))) as Record<string, unknown>;
@@ -122,7 +124,7 @@ export function CardWorkspace({ tagId, ownerKey }: Props) {
       }
 
       const { removeBackground } = await import("@imgly/background-removal");
-      const cutoutBlob = await removeBackground(file, {
+      const cutoutBlob = await removeBackground(prepared, {
         model: "isnet_quint8",
         output: { format: "image/png" },
       });
@@ -130,14 +132,32 @@ export function CardWorkspace({ tagId, ownerKey }: Props) {
         throw new Error("누끼 결과를 만들지 못했습니다.");
       }
 
-      const fd = new FormData();
-      fd.append("raw", file);
-      fd.append("cutout", cutoutBlob, "cutout.png");
-      fd.append("tagId", tagId);
-      const res = await fetch("/api/pet/upload-images", { method: "POST", body: fd });
-      const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+      let cutoutSmall = await shrinkPngBlobForUpload(cutoutBlob);
+      let uploadRaw: File = prepared;
+      const tryUpload = async () => {
+        const fd = new FormData();
+        fd.append("raw", uploadRaw);
+        fd.append("cutout", cutoutSmall, "cutout.png");
+        fd.append("tagId", tagId);
+        return fetch("/api/pet/upload-images", { method: "POST", body: fd });
+      };
+      let res = await tryUpload();
+      let data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+      if (!res.ok && res.status === 413) {
+        uploadRaw = await shrinkPhotoForPetPipeline(prepared, 1200, 0.76);
+        cutoutSmall = await shrinkPngBlobForUpload(cutoutBlob, 900);
+        res = await tryUpload();
+        data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+      }
       if (!res.ok) {
-        throw new Error(formatApiError("이미지 업로드 실패", data));
+        throw new Error(
+          formatApiError(
+            res.status === 413
+              ? "이미지가 너무 큽니다. 더 작은 사진으로 시도해 주세요."
+              : "이미지 업로드 실패",
+            data,
+          ),
+        );
       }
       setUploadedImage(data.rawImageUrl != null ? String(data.rawImageUrl) : null);
       setCutoutImage(data.cutoutUrl != null ? String(data.cutoutUrl) : null);
