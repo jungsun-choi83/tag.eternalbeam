@@ -1,0 +1,230 @@
+@import "tailwindcss";
+
+:root {
+  --bg-deep: #0b0f1a;
+  --bg-mid: #0f1b3d;
+  --accent-a: #7c8cff;
+  --accent-b: #9f7cff;
+  --text: #eef1ff;
+  --muted: #9aa3c4;
+  --card-border: rgba(255, 255, 255, 0.12);
+  --glass: rgba(18, 24, 48, 0.55);
+  --glow: 0 0 40px rgba(124, 140, 255, 0.22);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 메인: 은은한 별 떨어짐 (파티클 없음) */
+.stars-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 9999px;
+  opacity: 0.6;
+  animation: fall linear infinite;
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(-10vh);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+}
+
+.stars-layer .star:nth-child(1) {
+  left: 10%;
+  animation-duration: 8s;
+  animation-delay: 0s;
+}
+.stars-layer .star:nth-child(2) {
+  left: 30%;
+  animation-duration: 10s;
+  animation-delay: 2s;
+}
+.stars-layer .star:nth-child(3) {
+  left: 50%;
+  animation-duration: 7s;
+  animation-delay: 1s;
+}
+.stars-layer .star:nth-child(4) {
+  left: 70%;
+  animation-duration: 9s;
+  animation-delay: 3s;
+}
+.stars-layer .star:nth-child(5) {
+  left: 85%;
+  animation-duration: 11s;
+  animation-delay: 4s;
+}
+.stars-layer .star:nth-child(6) {
+  left: 10%;
+  animation-duration: 9s;
+  animation-delay: 6s;
+}
+.stars-layer .star:nth-child(7) {
+  left: 30%;
+  animation-duration: 11s;
+  animation-delay: 8s;
+}
+.stars-layer .star:nth-child(8) {
+  left: 50%;
+  animation-duration: 8s;
+  animation-delay: 5.5s;
+}
+.stars-layer .star:nth-child(9) {
+  left: 70%;
+  animation-duration: 7s;
+  animation-delay: 7.5s;
+}
+.stars-layer .star:nth-child(10) {
+  left: 85%;
+  animation-duration: 10s;
+  animation-delay: 9s;
+}
+.stars-layer .star:nth-child(11) {
+  left: 10%;
+  animation-duration: 7.5s;
+  animation-delay: 11s;
+}
+.stars-layer .star:nth-child(12) {
+  left: 30%;
+  animation-duration: 9s;
+  animation-delay: 12.5s;
+}
+.stars-layer .star:nth-child(13) {
+  left: 50%;
+  animation-duration: 11s;
+  animation-delay: 10s;
+}
+.stars-layer .star:nth-child(14) {
+  left: 70%;
+  animation-duration: 8s;
+  animation-delay: 13s;
+}
+.stars-layer .star:nth-child(15) {
+  left: 85%;
+  animation-duration: 10s;
+  animation-delay: 14.5s;
+}
+.stars-layer .star:nth-child(16) {
+  left: 10%;
+  animation-duration: 12s;
+  animation-delay: 15s;
+}
+.stars-layer .star:nth-child(17) {
+  left: 30%;
+  animation-duration: 7s;
+  animation-delay: 16.5s;
+}
+.stars-layer .star:nth-child(18) {
+  left: 50%;
+  animation-duration: 9s;
+  animation-delay: 15.5s;
+}
+.stars-layer .star:nth-child(19) {
+  left: 70%;
+  animation-duration: 11s;
+  animation-delay: 17s;
+}
+.stars-layer .star:nth-child(20) {
+  left: 85%;
+  animation-duration: 8s;
+  animation-delay: 18.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .star {
+    animation: none;
+    opacity: 0.25;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.55s ease-out both;
+}
+
+.animate-fade-in-delay {
+  animation: fade-in 0.55s ease-out 0.08s both;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fade-in 0.55s ease-out 0.16s both;
+}
+
+body {
+  font-family:
+    "Pretendard",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  min-height: 100vh;
+  background: linear-gradient(165deg, var(--bg-deep) 0%, var(--bg-mid) 48%, #0a1228 100%);
+  background-attachment: fixed;
+}
+
+.glass-card {
+  background: var(--glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    var(--glow);
+}
+
+.btn-gradient {
+  background: linear-gradient(115deg, var(--accent-b) 0%, var(--accent-a) 100%);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+.btn-gradient:hover:not(:disabled) {
+  box-shadow: 0 0 32px rgba(159, 124, 255, 0.45), 0 0 48px rgba(124, 140, 255, 0.25);
+  filter: brightness(1.05);
+}
+
+.btn-gradient:active:not(:disabled) {
+  transform: scale(0.98);
+}
