@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { RegisterForm } from "@/components/RegisterForm";
+import { RegisterOwnerRequired } from "@/components/RegisterOwnerRequired";
 import { isPetRegistered } from "@/lib/pet-helpers";
 import { getPet } from "@/lib/pet";
 import { isSupabaseConfigured } from "@/lib/supabase-admin";
@@ -25,7 +25,7 @@ export default async function RegisterPage({ params, searchParams }: Props) {
     if (isPetRegistered(pet)) {
       const key = pet.owner_key ?? null;
       if (key && ownerParam !== key) {
-        redirect(`/tag/${encodeURIComponent(tagId)}`);
+        return <RegisterOwnerRequired tagId={tagId} />;
       }
       if (key && ownerParam === key) {
         ownerKeyForEdit = key;
