@@ -22,6 +22,10 @@ export function RegisterOwnerRequired({ tagId }: { tagId: string }) {
         <p className="pt-2 text-xs text-[var(--muted)]">
           새 태그 ID로 처음 등록하려면 홈에서 태그 ID를 바꾼 뒤「태그 처음 등록」으로 들어가 주세요.
         </p>
+        <p className="border-t border-white/10 pt-3 text-xs text-[var(--muted)]">
+          링크만 잃고 데이터는 그대로 두고 싶다면, 서비스 운영자에게 문의해 주세요. (운영자용 초기화 방법은 저장소의{" "}
+          <span className="font-mono text-white/70">DEPLOY.md</span> 참고)
+        </p>
       </Card>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">

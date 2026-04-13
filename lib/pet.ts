@@ -49,3 +49,9 @@ export async function setPetPaid(tagId: string, paid: boolean) {
   const supabase = getSupabaseAdmin();
   return await supabase.from("pets").update({ paid }).eq("tag_id", tagId);
 }
+
+/** 견주 링크 분실 시에만 사용. owner_key만 null로 비웁니다. */
+export async function clearPetOwnerKey(tagId: string) {
+  const supabase = getSupabaseAdmin();
+  return await supabase.from("pets").update({ owner_key: null }).eq("tag_id", tagId);
+}

@@ -42,8 +42,24 @@ DNS가 Vercel을 가리키더라도, **도메인이 “예전에 만든 다른 V
 | `NEXT_PUBLIC_TOSS_CLIENT_KEY` | 토스 **라이브** 클라이언트 키(실결제 시) |
 | `TOSS_SECRET_KEY` | 토스 **라이브** 시크릿 |
 | `TOSS_PAYMENT_AMOUNT` | 원하는 결제 금액(원) |
+| `TAG_OWNER_RESET_SECRET` | (선택) 아래「견주 링크 분실」용. 없으면 해당 API는 비활성 |
 
 4. **Redeploy** 한 번 실행합니다.
+
+### 견주 `?owner=` 링크를 잃었을 때 (운영자 전용)
+
+1. Vercel에 **`TAG_OWNER_RESET_SECRET`** 에 **길고 예측 불가능한 문자열**을 넣고 재배포합니다.
+2. 아래처럼 **HTTPS POST**로만 호출합니다 (브라우저 주소창이 아님).
+
+```bash
+curl -sS -X POST "https://tag.eternalbeam.com/api/pet/owner-reset" \
+  -H "Content-Type: application/json" \
+  -d "{\"tagId\":\"demo\",\"secret\":\"여기에_TAG_OWNER_RESET_SECRET_값\"}"
+```
+
+3. 응답이 `{"ok":true,"tagId":"demo"}` 이면 해당 태그의 **`owner_key`가 비워진** 상태입니다. 이후 **`/tag/demo/register`** 로 다시 들어가 처음처럼 등록하면 **새 견주 링크**가 발급됩니다.
+
+**주의:** 이 비밀값을 아는 사람은 누구나 해당 태그의 견주 링크를 무력화할 수 있으므로, **본인만 아는 값**으로 두고 Git·채팅에 올리지 마세요.
 
 `NEXT_PUBLIC_APP_URL`은 결제 성공/실패 리다이렉트 등 서버가 만드는 절대 URL에 쓰이므로 **반드시** 프로덕션 도메인으로 맞춥니다.
 
