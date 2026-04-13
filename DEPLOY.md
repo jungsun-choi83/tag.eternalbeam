@@ -43,6 +43,8 @@ DNS가 Vercel을 가리키더라도, **도메인이 “예전에 만든 다른 V
 | `TOSS_SECRET_KEY` | 토스 **라이브** 시크릿 |
 | `TOSS_PAYMENT_AMOUNT` | 원하는 결제 금액(원) |
 | `TAG_OWNER_RESET_SECRET` | (선택) 아래「견주 링크 분실」용. 없으면 해당 API는 비활성 |
+| `REMBG_SERVICE_URL` | (선택) **Python rembg** 를 HTTP로 띄운 서버 주소. 있으면 remove.bg보다 우선 |
+| `REMOVE_BG_API_KEY` | (선택) 상용 **remove.bg**(remove**dot**bg). `REMBG_SERVICE_URL` 없을 때 |
 
 4. **Redeploy** 한 번 실행합니다.
 
