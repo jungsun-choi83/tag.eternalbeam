@@ -16,8 +16,9 @@ export function RegisterForm({
   ownerKeyForEdit?: string;
 }) {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [petName, setPetName] = useState("");
+  const [ownerPhone, setOwnerPhone] = useState("");
+  const [ownerName, setOwnerName] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [notifyOnScan, setNotifyOnScan] = useState(false);
@@ -31,8 +32,9 @@ export function RegisterForm({
         const data = await res.json();
         const p = data.pet;
         if (!p) return;
-        setName(p.name ?? "");
-        setPhone(p.phone ?? "");
+        setPetName(p.name ?? "");
+        setOwnerPhone(p.phone ?? "");
+        setOwnerName(typeof p.owner_name === "string" ? p.owner_name : "");
         setDescription(p.description ?? "");
         setImageUrl(p.image_url ?? p.raw_image_url ?? null);
         setNotifyOnScan(Boolean(p.notify_on_scan));
@@ -51,10 +53,11 @@ export function RegisterForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           tagId,
-          name,
-          phone,
+          petName,
+          ownerPhone,
+          ownerName: ownerName.trim() || undefined,
           description,
-          image_url: imageUrl,
+          petImage: imageUrl,
           notify_on_scan: notifyOnScan,
           ...(ownerKeyForEdit ? { ownerKey: ownerKeyForEdit } : {}),
         }),
@@ -72,7 +75,7 @@ export function RegisterForm({
     } finally {
       setLoading(false);
     }
-  }, [description, imageUrl, name, notifyOnScan, ownerKeyForEdit, phone, router, tagId]);
+  }, [description, imageUrl, petName, notifyOnScan, ownerKeyForEdit, ownerName, ownerPhone, router, tagId]);
 
   return (
     <main className="animate-fade-in space-y-6 pb-12">
@@ -101,13 +104,24 @@ export function RegisterForm({
       ) : null}
 
       <Card className="animate-fade-in-delay space-y-6">
-        <Input label="이름" value={name} onChange={(e) => setName(e.target.value)} placeholder="반려견 이름" />
         <Input
-          label="전화번호"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          label="아이 이름"
+          value={petName}
+          onChange={(e) => setPetName(e.target.value)}
+          placeholder="반려견 이름"
+        />
+        <Input
+          label="보호자 연락처"
+          value={ownerPhone}
+          onChange={(e) => setOwnerPhone(e.target.value)}
           placeholder="01012345678"
           inputMode="tel"
+        />
+        <Input
+          label="보호자 이름 (선택)"
+          value={ownerName}
+          onChange={(e) => setOwnerName(e.target.value)}
+          placeholder="홍길동"
         />
         <Textarea
           label="간단한 메모"

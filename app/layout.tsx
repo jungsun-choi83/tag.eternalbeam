@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ETERNAL BEAM · 반려견 QR 태그",
-  description: "QR을 스캔하면 반려견 정보를 확인할 수 있습니다.",
+  title: "ETERNAL BEAM · 기억으로 이어지는 태그",
+  description: "이 작은 태그는, 한 아이의 기억으로 이어집니다.",
 };
 
 export default function RootLayout({

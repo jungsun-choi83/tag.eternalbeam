@@ -2,9 +2,11 @@ import type { PetRow } from "./pet";
 
 export type PublicPetRow = Omit<PetRow, "owner_key">;
 
+/** 견주 등록 + 발견자 연결: 이름·연락처·사진까지 있어야 완료 */
 export function isPetRegistered(p: PetRow | null): p is PetRow {
   if (!p) return false;
-  return Boolean(p.name?.trim() && p.phone?.trim());
+  const img = (p.final_image_url ?? p.image_url ?? p.raw_image_url)?.trim();
+  return Boolean(p.name?.trim() && p.phone?.trim() && img);
 }
 
 export function toPublicPet(pet: PetRow | null): PublicPetRow | null {

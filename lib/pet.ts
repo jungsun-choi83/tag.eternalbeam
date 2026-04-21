@@ -7,6 +7,8 @@ export type PetRow = {
   name: string;
   phone: string;
   description: string;
+  /** 보호자 이름 (선택) */
+  owner_name: string | null;
   /** 보호 정보용 대표 사진 URL */
   image_url: string | null;
   raw_image_url: string | null;
@@ -30,9 +32,12 @@ export async function getPet(tagId: string) {
     .maybeSingle();
 
   if (!data) return null;
-  const row = data as { owner_key?: string | null };
+  const row = data as { owner_key?: string | null; owner_name?: string | null };
+  const on =
+    typeof row.owner_name === "string" && row.owner_name.trim().length > 0 ? row.owner_name.trim() : null;
   return {
     ...(data as PetRow),
+    owner_name: on,
     owner_key: typeof row.owner_key === "string" && row.owner_key.length > 0 ? row.owner_key : null,
   };
 }

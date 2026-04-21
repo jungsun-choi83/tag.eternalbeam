@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-import { Suspense } from "react";
-import { FinderView } from "@/components/FinderView";
-import { OwnerView } from "@/components/OwnerView";
+import { FinderTagExperience } from "@/components/FinderTagExperience";
+import { FinderTagFallback } from "@/components/FinderTagFallback";
+import { OwnerTagExperience } from "@/components/OwnerTagExperience";
+import { TagEntryShell } from "@/components/TagEntryShell";
 import { TagScanEffects } from "@/components/TagScanEffects";
 import { Card } from "@/components/ui/Card";
-import { isPetRegistered } from "@/lib/pet-helpers";
+import { getPetDisplayImageUrl, isPetRegistered } from "@/lib/pet-helpers";
 import { getPet } from "@/lib/pet";
+import { getOwnerTagSummary } from "@/lib/tag-activity";
 import { isSupabaseConfigured } from "@/lib/supabase-admin";
-import { PaymentReturnHandler } from "./payment-return";
 
 type Props = {
   params: Promise<{ tagId: string }>;
@@ -50,28 +50,46 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
   }
 
   const data = await getPet(tagId);
+
   if (!isPetRegistered(data)) {
-    redirect(`/tag/${encodeURIComponent(tagId)}/register`);
+    return (
+      <main className="animate-fade-in space-y-6 py-6">
+        <TagEntryShell>
+          <FinderTagFallback tagId={tagId} />
+        </TagEntryShell>
+      </main>
+    );
   }
 
-  const ownerKey = data.owner_key ?? null;
+  const pet = data;
+  const ownerKey = pet.owner_key ?? null;
   const isOwner = Boolean(ownerKey && ownerParam && ownerParam === ownerKey);
-  const logView = !isOwner && Boolean(data.notify_on_scan);
-  const paymentOwnerKey = isOwner && ownerKey ? ownerKey : undefined;
+  const logView = !isOwner && Boolean(pet.notify_on_scan);
+  const petImage = getPetDisplayImageUrl(pet);
+
+  const summary = isOwner && ownerKey ? await getOwnerTagSummary(tagId) : null;
 
   return (
     <main className="animate-fade-in space-y-6 py-6">
       <TagScanEffects tagId={tagId} logView={logView} />
-
-      <Suspense fallback={null}>
-        <PaymentReturnHandler tagId={tagId} ownerKey={paymentOwnerKey} />
-      </Suspense>
-
-      {isOwner && ownerKey ? (
-        <OwnerView pet={data} tagId={tagId} ownerKey={ownerKey} />
-      ) : (
-        <FinderView pet={data} tagId={tagId} />
-      )}
+      <TagEntryShell>
+        {isOwner && ownerKey && summary ? (
+          <OwnerTagExperience
+            tagId={tagId}
+            ownerKey={ownerKey}
+            petName={pet.name}
+            notifyOnScan={Boolean(pet.notify_on_scan)}
+            summary={summary}
+          />
+        ) : (
+          <FinderTagExperience
+            tagId={tagId}
+            petName={pet.name}
+            ownerPhone={pet.phone}
+            petImage={petImage}
+          />
+        )}
+      </TagEntryShell>
     </main>
   );
 }

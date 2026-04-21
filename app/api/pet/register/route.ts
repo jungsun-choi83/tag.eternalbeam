@@ -19,10 +19,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "tagId is required" }, { status: 400 });
     }
 
-    const name = String(body.name ?? "").trim();
-    const phone = String(body.phone ?? "").trim();
+    const name = String(body.petName ?? body.name ?? "").trim();
+    const phone = String(body.ownerPhone ?? body.phone ?? "").trim();
     const description = String(body.description ?? "").trim();
-    const imageUrl = body.image_url != null ? String(body.image_url).trim() : "";
+    const ownerName = String(body.ownerName ?? "").trim();
+    const imageUrl = String(body.petImage ?? body.image_url ?? "").trim();
     const notifyOnScan = Boolean(body.notify_on_scan);
     const bodyOwnerKey = body.ownerKey != null ? String(body.ownerKey).trim() : "";
 
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
       raw_image_url: imageUrl,
       notify_on_scan: notifyOnScan,
       owner_key: nextOwnerKey,
+      owner_name: ownerName || null,
     };
     if (!existing?.paid) {
       payload.paid = false;
@@ -72,6 +74,13 @@ export async function POST(req: NextRequest) {
       const { owner_key: _drop, ...withoutOwnerKey } = payload;
       void _drop;
       const retry = await upsertPet(tagId, withoutOwnerKey);
+      error = retry.error;
+    }
+
+    if (error && isMissingOwnerNameColumnError(error.message)) {
+      const { owner_name: _on, ...withoutOwnerName } = payload;
+      void _on;
+      const retry = await upsertPet(tagId, withoutOwnerName);
       error = retry.error;
     }
 
@@ -118,10 +127,16 @@ function isMissingOwnerKeyColumnError(message: string): boolean {
   return m.includes("owner_key") && (m.includes("column") || m.includes("schema cache"));
 }
 
+function isMissingOwnerNameColumnError(message: string): boolean {
+  const m = message.toLowerCase();
+  return m.includes("owner_name") && (m.includes("column") || m.includes("schema cache"));
+}
+
 function isLikelyMissingColumn(message: string): boolean {
   const m = message.toLowerCase();
-  /** owner_key 누락은 위에서 전용 재시도함 */
+  /** owner_key / owner_name 누락은 위에서 전용 재시도함 */
   if (m.includes("owner_key")) return false;
+  if (m.includes("owner_name")) return false;
   /** "could not find the '…' column of 'pets' in the schema cache" → 컬럼 폴백 허용 */
   if (m.includes("column of") && m.includes("schema cache")) return true;
   /** 테이블 자체가 없을 때는 컬럼 폴백으로 해결되지 않음 */

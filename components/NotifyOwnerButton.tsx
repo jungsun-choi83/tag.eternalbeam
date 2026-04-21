@@ -25,7 +25,12 @@ export function NotifyOwnerButton({ tagId }: { tagId: string }) {
 
   return (
     <div className="space-y-2">
-      <Button variant="outline" loading={loading} onClick={() => void notify()}>
+      <Button
+        variant="outline"
+        className="min-h-[56px] w-full text-[16px] font-semibold"
+        loading={loading}
+        onClick={() => void notify()}
+      >
         보호자에게 알리기
       </Button>
       {msg ? <p className="text-center text-xs text-[var(--muted)]">{msg}</p> : null}

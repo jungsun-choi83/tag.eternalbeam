@@ -6,7 +6,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
-  transpilePackages: ["@imgly/background-removal"],
 };
 
 export default nextConfig;
