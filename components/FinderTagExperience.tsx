@@ -1,5 +1,6 @@
 "use client";
 
+import { EternalBeamMark } from "@/components/EternalBeamMark";
 import { FinderLocationShare } from "@/components/FinderLocationShare";
 
 type Props = {
@@ -18,9 +19,7 @@ export function FinderTagExperience({ tagId, petName, ownerPhone, petImage }: Pr
 
   return (
     <div className="min-h-[50vh] space-y-9 pb-16 pt-4">
-      <p className="text-center text-[10px] font-medium uppercase tracking-[0.32em] text-[#8a7a58]">
-        Eternal Beam
-      </p>
+      <EternalBeamMark />
 
       <div className="flex flex-col items-center">
         <div

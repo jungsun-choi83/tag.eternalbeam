@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase-admin";
+import { maybeSendOwnerScanSms } from "@/lib/notify-owner-scan";
+import { maybeSendOwnerWebPush } from "@/lib/notify-owner-webpush";
 import { getPet } from "@/lib/pet";
 
 export const runtime = "nodejs";
@@ -30,6 +32,21 @@ export async function POST(req: NextRequest) {
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    await Promise.all([
+      maybeSendOwnerScanSms({
+        tagId,
+        petName: pet?.name ?? "",
+        ownerPhone: pet?.phone ?? "",
+        kind,
+      }),
+      maybeSendOwnerWebPush({
+        tagId,
+        petName: pet?.name ?? "",
+        kind,
+      }),
+    ]);
+
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ ok: false }, { status: 500 });

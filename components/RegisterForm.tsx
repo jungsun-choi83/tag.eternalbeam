@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { EternalBeamMark } from "@/components/EternalBeamMark";
 import { ProfilePhotoUpload } from "@/components/ProfilePhotoUpload";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -15,7 +15,6 @@ export function RegisterForm({
   tagId: string;
   ownerKeyForEdit?: string;
 }) {
-  const router = useRouter();
   const [petName, setPetName] = useState("");
   const [ownerPhone, setOwnerPhone] = useState("");
   const [ownerName, setOwnerName] = useState("");
@@ -69,22 +68,21 @@ export function RegisterForm({
       }
       const returnedKey = typeof body?.ownerKey === "string" ? body.ownerKey : ownerKeyForEdit;
       const qs = returnedKey ? `?owner=${encodeURIComponent(returnedKey)}` : "";
-      router.push(`/tag/${encodeURIComponent(tagId)}${qs}`);
+      /** 전체 로드로 최신 서버 HTML·번들을 받게 함(클라이언트 전환만 하면 예전 화면이 남는 경우 방지) */
+      window.location.assign(`/tag/${encodeURIComponent(tagId)}${qs}`);
     } catch (e) {
       setErr(e instanceof Error ? e.message : "오류");
     } finally {
       setLoading(false);
     }
-  }, [description, imageUrl, petName, notifyOnScan, ownerKeyForEdit, ownerName, ownerPhone, router, tagId]);
+  }, [description, imageUrl, petName, notifyOnScan, ownerKeyForEdit, ownerName, ownerPhone, tagId]);
 
   return (
     <main className="animate-fade-in space-y-6 pb-12">
       <header className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-[var(--accent-a)]">
-            Eternal Beam
-          </p>
-          <h1 className="mt-2 text-2xl font-light tracking-tight text-white">우리 아이 보호 정보 등록</h1>
+          <EternalBeamMark align="start" />
+          <h1 className="mt-3 text-2xl font-light tracking-tight text-white">우리 아이 보호 정보 등록</h1>
           <p className="mt-2 max-w-[360px] text-[15px] leading-relaxed text-[var(--muted)]">
             혹시 모를 상황을 대비해 연락받을 정보를 남겨주세요
           </p>
@@ -142,7 +140,7 @@ export function RegisterForm({
           <div>
             <p className="text-sm font-medium text-white">QR 스캔 시 알림 받기</p>
             <p className="mt-1 text-xs text-[var(--muted)]">
-              ON이면 스캔 기록이 저장됩니다. 이후 SMS·푸시로 확장할 수 있어요.
+              ON이면 스캔이 DB에 저장됩니다. 견주 링크에서 브라우저 알림을 켜면 무료로 알려드려요. (선택) Twilio 설정 시에만 문자가 나가며 요금이 붙을 수 있어요.
             </p>
           </div>
           <input

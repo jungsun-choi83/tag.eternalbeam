@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { EternalBeamMark } from "@/components/EternalBeamMark";
 
 type Props = {
   initialTagId?: string;
@@ -90,6 +91,9 @@ export function HomeHero({ initialTagId }: Props) {
       >
         {loaded ? (
           <div className="mx-auto w-full max-w-[400px] px-1">
+            <div className="eb-hero-line mb-6" style={{ animationDelay: "0.02s" }}>
+              <EternalBeamMark />
+            </div>
             <p
               className="eb-hero-line text-center text-[12px] font-medium tracking-[0.18em] text-[#c4a85a]/95"
               style={{ animationDelay: "0.05s" }}

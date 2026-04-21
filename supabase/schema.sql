@@ -40,6 +40,47 @@ create table if not exists public.tag_scans (
 create index if not exists tag_scans_tag_id_idx on public.tag_scans (tag_id);
 create index if not exists tag_scans_created_at_idx on public.tag_scans (created_at desc);
 
+/** 견주 스캔 SMS 발송 간격 제한(동일 trigger 기준) */
+create table if not exists public.owner_scan_sms_log (
+  id uuid primary key default gen_random_uuid(),
+  tag_id text not null,
+  trigger text not null check (trigger in ('view', 'notify')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists owner_scan_sms_log_tag_trigger_created_idx
+  on public.owner_scan_sms_log (tag_id, trigger, created_at desc);
+
+alter table public.owner_scan_sms_log enable row level security;
+
+/** 견주 기기별 웹 푸시 구독 (VAPID, 비용 없음) */
+create table if not exists public.owner_push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  tag_id text not null,
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create index if not exists owner_push_subscriptions_tag_id_idx on public.owner_push_subscriptions (tag_id);
+
+alter table public.owner_push_subscriptions enable row level security;
+
+/** 웹 푸시 발송 간격(태그·종류별) */
+create table if not exists public.owner_webpush_sent_log (
+  id uuid primary key default gen_random_uuid(),
+  tag_id text not null,
+  trigger text not null check (trigger in ('view', 'notify')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists owner_webpush_sent_log_tag_trigger_created_idx
+  on public.owner_webpush_sent_log (tag_id, trigger, created_at desc);
+
+alter table public.owner_webpush_sent_log enable row level security;
+
 -- 발견자가 공유한 위치 (QR 조회 화면)
 create table if not exists public.finder_locations (
   id uuid primary key default gen_random_uuid(),

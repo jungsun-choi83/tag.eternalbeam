@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EternalBeamMark } from "@/components/EternalBeamMark";
 import { Card } from "@/components/ui/Card";
 
 /** 이미 등록된 태그인데 견주 키(?owner=) 없이 /register 로 온 경우 */
@@ -7,8 +8,8 @@ export function RegisterOwnerRequired({ tagId }: { tagId: string }) {
   return (
     <main className="animate-fade-in mx-auto max-w-lg space-y-6 px-4 py-10">
       <header className="text-center">
-        <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-[var(--accent-a)]">Eternal Beam</p>
-        <h1 className="mt-2 text-2xl font-light tracking-tight text-white">이 태그는 이미 등록되어 있어요</h1>
+        <EternalBeamMark />
+        <h1 className="mt-4 text-2xl font-light tracking-tight text-white">이 태그는 이미 등록되어 있어요</h1>
         <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
           처음 등록할 때 받은 <strong className="text-white/90">견주 관리 주소</strong>
           <span className="whitespace-nowrap text-[var(--accent-a)]"> (?owner=…)</span>로만 정보를 수정할 수

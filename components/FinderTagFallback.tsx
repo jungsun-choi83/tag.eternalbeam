@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { EternalBeamMark } from "@/components/EternalBeamMark";
 
 type Props = { tagId: string };
 
@@ -7,6 +8,9 @@ export function FinderTagFallback({ tagId }: Props) {
   const enc = encodeURIComponent(tagId);
   return (
     <div className="flex min-h-[55vh] flex-col items-center justify-center px-4 pb-16 pt-8 text-center">
+      <div className="mb-8 w-full">
+        <EternalBeamMark />
+      </div>
       <div className="max-w-[320px] rounded-3xl border border-[#d4af37]/18 bg-[#10100e]/85 px-8 py-10 shadow-[0_0_48px_rgba(212,175,55,0.06)]">
         <p className="text-[13px] font-light leading-relaxed text-[#c9bfb0]">
           아직 등록되지 않은 태그입니다

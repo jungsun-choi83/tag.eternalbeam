@@ -68,6 +68,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
   const petImage = getPetDisplayImageUrl(pet);
 
   const summary = isOwner && ownerKey ? await getOwnerTagSummary(tagId) : null;
+  const webPushPublicKey = process.env.NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY?.trim() || null;
 
   return (
     <main className="animate-fade-in space-y-6 py-6">
@@ -80,6 +81,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
             petName={pet.name}
             notifyOnScan={Boolean(pet.notify_on_scan)}
             summary={summary}
+            webPushPublicKey={webPushPublicKey}
           />
         ) : (
           <FinderTagExperience

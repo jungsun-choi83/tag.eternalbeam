@@ -335,6 +335,18 @@
     opacity: 1;
     transform: none;
   }
+  .eb-brand-title {
+    animation: none;
+    color: #e8d5a3;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    filter: none;
+  }
+  .eb-brand-sparkle {
+    animation: none !important;
+    opacity: 0;
+  }
 }
 
 .animate-fade-in {
@@ -505,4 +517,74 @@ body {
   border-color: rgba(212, 175, 55, 0.22);
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
   background: rgba(255, 252, 245, 0.055);
+}
+
+/* Eternal Beam 상단 마크 — 오로라 텍스트 + 하향 스파클 */
+.eb-brand-title {
+  font-size: clamp(0.82rem, 3.4vw, 1.05rem);
+  font-weight: 600;
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  line-height: 1.35;
+  background: linear-gradient(
+    100deg,
+    #6b5520 0%,
+    #c9a227 18%,
+    #fff8e8 38%,
+    #d4af37 52%,
+    #f0e4b8 68%,
+    #d4af37 82%,
+    #7a6220 100%
+  );
+  background-size: 240% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgba(212, 175, 55, 0.25));
+  animation: eb-brand-shimmer 5.8s ease-in-out infinite;
+}
+
+@keyframes eb-brand-shimmer {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.eb-brand-sparkle {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 252, 245, 0.95) 0%,
+    rgba(232, 212, 160, 0.75) 35%,
+    rgba(212, 175, 55, 0.35) 60%,
+    transparent 78%
+  );
+  box-shadow:
+    0 0 8px rgba(255, 248, 220, 0.55),
+    0 0 16px rgba(212, 175, 55, 0.35);
+  animation: eb-brand-sparkle-rise ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes eb-brand-sparkle-rise {
+  0% {
+    transform: translateY(0) scale(0.35);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateY(-52px) scale(1);
+    opacity: 0;
+  }
 }
