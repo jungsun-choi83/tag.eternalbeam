@@ -18,6 +18,13 @@ type Particle = {
   dy: string;
 };
 
+type HomeSparkle = {
+  left: string;
+  delay: string;
+  duration: string;
+  rise: string;
+};
+
 export function HomeHero({ initialTagId }: Props) {
   const [slug, setSlug] = useState(initialTagId ?? "");
   const [loaded, setLoaded] = useState(false);
@@ -43,6 +50,16 @@ export function HomeHero({ initialTagId }: Props) {
       delay: (i * 0.41) % 10,
       dx: `${-15 + (i * 11) % 38}px`,
       dy: `${-25 - (i * 9) % 55}px`,
+    }));
+  }, []);
+
+  /** 메인 하단: 오로라 위로 올라오는 스파클 */
+  const homeSparkles = useMemo<HomeSparkle[]>(() => {
+    return Array.from({ length: 28 }, (_, i) => ({
+      left: `${2 + ((i * 37) % 96)}%`,
+      delay: `${((i * 0.21) % 5.8).toFixed(2)}s`,
+      duration: `${9.5 + (i % 11) * 1.35}s`,
+      rise: `${120 + (i * 17) % 140}px`,
     }));
   }, []);
 
@@ -73,6 +90,23 @@ export function HomeHero({ initialTagId }: Props) {
             />
           ))}
         </div>
+        <div className="eb-home-bottom-rise">
+          <div className="eb-home-bottom-aurora" />
+          <div className="eb-home-sparkle-field">
+            {homeSparkles.map((s, i) => (
+              <span
+                key={i}
+                className="eb-home-sparkle"
+                style={{
+                  left: s.left,
+                  animationDuration: s.duration,
+                  animationDelay: s.delay,
+                  ["--spark-rise" as string]: s.rise,
+                }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
       <div
@@ -91,7 +125,7 @@ export function HomeHero({ initialTagId }: Props) {
       >
         {loaded ? (
           <div className="mx-auto w-full max-w-[400px] px-1">
-            <div className="eb-hero-line mb-6" style={{ animationDelay: "0.02s" }}>
+            <div className="eb-hero-line mb-6 w-full max-w-full" style={{ animationDelay: "0.02s" }}>
               <EternalBeamMark />
             </div>
             <p

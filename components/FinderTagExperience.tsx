@@ -22,27 +22,21 @@ export function FinderTagExperience({ tagId, petName, ownerPhone, petImage }: Pr
       <EternalBeamMark />
 
       <div className="flex flex-col items-center">
-        <div
-          className="relative mx-auto size-[min(72vw,240px)] shrink-0 sm:size-[220px]"
-          style={{
-            filter: "drop-shadow(0 0 28px rgba(212, 175, 55, 0.22)) drop-shadow(0 0 48px rgba(212, 175, 55, 0.08))",
-          }}
-        >
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#d4af37]/25 via-transparent to-[#8a7020]/15 p-[2px]">
-            <div className="size-full overflow-hidden rounded-full bg-[#0b0b0b] p-[3px]">
-              {petImage ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  src={petImage}
-                  alt={`${petName}의 얼굴`}
-                  className="size-full rounded-full object-cover object-center"
-                />
-              ) : (
-                <div className="flex size-full items-center justify-center rounded-full bg-[#141210] text-sm text-[#5c574e]">
-                  사진
-                </div>
-              )}
-            </div>
+        <div className="eb-finder-avatar-stack relative mx-auto size-[min(72vw,240px)] shrink-0 sm:size-[220px]">
+          <div className="eb-finder-avatar-aurora-base absolute inset-0 rounded-full motion-reduce:animate-none" aria-hidden />
+          <div className="absolute inset-[4px] z-[1] overflow-hidden rounded-full bg-[#0b0b0b] p-[3px]">
+            {petImage ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={petImage}
+                alt={`${petName}의 얼굴`}
+                className="size-full rounded-full object-cover object-center"
+              />
+            ) : (
+              <div className="flex size-full items-center justify-center rounded-full bg-[#141210] text-sm text-[#5c574e]">
+                사진
+              </div>
+            )}
           </div>
         </div>
 

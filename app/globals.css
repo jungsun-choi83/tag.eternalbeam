@@ -98,6 +98,84 @@
   );
 }
 
+/* 홈: 하단 오로라 + 아래에서 올라오는 스파클 */
+.eb-home-bottom-rise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.eb-home-bottom-aurora {
+  position: absolute;
+  left: -18%;
+  right: -18%;
+  bottom: -12%;
+  height: 55%;
+  background:
+    radial-gradient(ellipse 88% 52% at 50% 100%, rgba(212, 175, 55, 0.16), transparent 58%),
+    radial-gradient(ellipse 62% 38% at 22% 96%, rgba(140, 190, 150, 0.07), transparent 52%),
+    radial-gradient(ellipse 58% 36% at 82% 98%, rgba(180, 130, 90, 0.08), transparent 50%);
+  opacity: 0.88;
+  animation: eb-home-bottom-aurora-drift 20s ease-in-out infinite alternate;
+}
+
+@keyframes eb-home-bottom-aurora-drift {
+  0% {
+    transform: translateX(-2.5%) scale(1);
+    opacity: 0.78;
+  }
+  100% {
+    transform: translateX(3.5%) scale(1.04);
+    opacity: 0.95;
+  }
+}
+
+.eb-home-sparkle-field {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: min(46vh, 440px);
+  pointer-events: none;
+}
+
+.eb-home-sparkle {
+  position: absolute;
+  bottom: 0;
+  width: 3px;
+  height: 3px;
+  margin-left: -1.5px;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 252, 245, 0.95) 0%,
+    rgba(232, 212, 160, 0.65) 38%,
+    rgba(212, 175, 55, 0.35) 62%,
+    transparent 78%
+  );
+  box-shadow:
+    0 0 10px rgba(255, 248, 220, 0.5),
+    0 0 24px rgba(212, 175, 55, 0.22);
+  animation: eb-home-sparkle-rise ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes eb-home-sparkle-rise {
+  0% {
+    transform: translateY(10px) scale(0.28);
+    opacity: 0;
+  }
+  14% {
+    opacity: 0.92;
+  }
+  100% {
+    transform: translateY(calc(-1 * var(--spark-rise, 200px))) scale(1);
+    opacity: 0;
+  }
+}
+
 /* 랜딩 타이틀 줄 */
 @keyframes eb-hero-rise {
   from {
@@ -319,11 +397,28 @@
 @media (prefers-reduced-motion: reduce) {
   .star,
   .eb-particle,
-  .eb-aurora {
+  .eb-aurora,
+  .eb-home-bottom-aurora,
+  .eb-home-sparkle {
     animation: none !important;
+  }
+  .eb-finder-avatar-aurora-base {
+    animation: none !important;
+  }
+  .eb-finder-avatar-stack {
+    animation: none !important;
+    filter: drop-shadow(0 0 24px rgba(212, 175, 55, 0.2));
+    opacity: 1;
   }
   .eb-aurora {
     transform: none;
+  }
+  .eb-home-bottom-aurora {
+    opacity: 0.55;
+    transform: none;
+  }
+  .eb-home-sparkle {
+    opacity: 0;
   }
   .eb-intro-dot {
     animation: none;
@@ -519,6 +614,48 @@ body {
   background: rgba(255, 252, 245, 0.055);
 }
 
+/* 발견자 프로필: 원둘레 오로라 회전 + 은은한 펄스 */
+.eb-finder-avatar-aurora-base {
+  z-index: 0;
+  background: conic-gradient(
+    from 0deg,
+    rgba(212, 175, 55, 0.2) 0%,
+    rgba(255, 250, 235, 0.9) 12%,
+    rgba(160, 200, 170, 0.45) 24%,
+    rgba(212, 175, 55, 0.35) 38%,
+    rgba(245, 232, 200, 0.85) 52%,
+    rgba(120, 90, 55, 0.25) 68%,
+    rgba(212, 175, 55, 0.5) 82%,
+    rgba(255, 248, 220, 0.65) 92%,
+    rgba(212, 175, 55, 0.2) 100%
+  );
+  animation: eb-finder-aurora-rotate 9s linear infinite;
+}
+
+@keyframes eb-finder-aurora-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.eb-finder-avatar-stack {
+  animation: eb-finder-avatar-pulse 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 22px rgba(212, 175, 55, 0.22)) drop-shadow(0 0 48px rgba(212, 175, 55, 0.08));
+}
+
+@keyframes eb-finder-avatar-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.18)) drop-shadow(0 0 40px rgba(212, 175, 55, 0.06));
+    opacity: 1;
+  }
+  50% {
+    filter: drop-shadow(0 0 32px rgba(212, 175, 55, 0.42)) drop-shadow(0 0 58px rgba(180, 220, 170, 0.14))
+      drop-shadow(0 0 86px rgba(255, 248, 220, 0.08));
+    opacity: 0.94;
+  }
+}
+
 /* Eternal Beam 상단 마크 — 오로라 텍스트 + 하향 스파클 */
 .eb-brand-title {
   font-size: clamp(0.82rem, 3.4vw, 1.05rem);
@@ -542,6 +679,14 @@ body {
   color: transparent;
   filter: drop-shadow(0 0 14px rgba(212, 175, 55, 0.25));
   animation: eb-brand-shimmer 5.8s ease-in-out infinite;
+}
+
+/* 가운데 정렬: 자간 때문에 오른쪽이 비어 보이므로 우측 패딩으로 광학적 중앙 맞춤 */
+.eb-brand-title.text-center {
+  text-indent: 0;
+  padding-left: 0;
+  padding-right: 0.42em;
+  box-sizing: border-box;
 }
 
 @keyframes eb-brand-shimmer {
