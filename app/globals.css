@@ -243,17 +243,89 @@
   }
 }
 
-/* 홈 전용 카드 */
-.eb-home-card {
-  background: linear-gradient(165deg, rgba(18, 16, 14, 0.78) 0%, rgba(8, 8, 8, 0.55) 100%);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  border: 1px solid rgba(212, 175, 55, 0.28);
-  border-radius: 22px;
+/* 홈 전용 카드: 느린 다크골드 쉰 보더 + 글래스 (내부) */
+.eb-home-card-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 24px;
+  padding: 2px;
+  overflow: hidden;
+  isolation: isolate;
   box-shadow:
-    0 0 0 1px rgba(255, 250, 235, 0.04) inset,
-    0 8px 40px rgba(0, 0, 0, 0.55),
-    0 0 80px rgba(212, 175, 55, 0.06);
+    0 22px 56px rgba(0, 0, 0, 0.62),
+    0 0 0 1px rgba(212, 175, 55, 0.07) inset,
+    0 0 96px rgba(212, 175, 55, 0.07),
+    0 1px 0 rgba(255, 250, 235, 0.04) inset;
+}
+
+.eb-home-card-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -180%;
+  z-index: 0;
+  background: conic-gradient(
+    from 0deg,
+    rgba(28, 26, 22, 0.98) 0deg,
+    rgba(55, 46, 32, 0.92) 32deg,
+    rgba(212, 175, 55, 0.38) 72deg,
+    rgba(255, 248, 230, 0.42) 112deg,
+    rgba(120, 92, 52, 0.45) 152deg,
+    rgba(212, 175, 55, 0.28) 200deg,
+    rgba(45, 40, 34, 0.95) 260deg,
+    rgba(90, 75, 48, 0.55) 300deg,
+    rgba(28, 26, 22, 0.98) 360deg
+  );
+  animation: eb-home-card-border-flow 26s linear infinite;
+}
+
+.eb-home-card-wrap.eb-hero-line {
+  animation:
+    eb-hero-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both,
+    eb-home-card-levitate 11s ease-in-out 0.85s infinite;
+}
+
+@keyframes eb-home-card-border-flow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes eb-home-card-levitate {
+  0%,
+  100% {
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.6),
+      0 0 0 1px rgba(212, 175, 55, 0.07) inset,
+      0 0 80px rgba(212, 175, 55, 0.06),
+      0 1px 0 rgba(255, 250, 235, 0.04) inset;
+  }
+  50% {
+    box-shadow:
+      0 28px 70px rgba(0, 0, 0, 0.52),
+      0 0 0 1px rgba(212, 175, 55, 0.11) inset,
+      0 0 120px rgba(212, 175, 55, 0.1),
+      0 1px 0 rgba(255, 250, 235, 0.06) inset;
+  }
+}
+
+.eb-home-card {
+  position: relative;
+  z-index: 1;
+  border-radius: 22px;
+  background: linear-gradient(
+    160deg,
+    rgba(22, 20, 18, 0.82) 0%,
+    rgba(10, 10, 10, 0.52) 48%,
+    rgba(14, 13, 11, 0.68) 100%
+  );
+  backdrop-filter: blur(24px) saturate(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(1.05);
+  border: 1px solid rgba(255, 250, 235, 0.06);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 1px 0 rgba(255, 248, 230, 0.05) inset,
+    inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
 /* 레거시 별 (다른 페이지 호환 — 아주 약하게만) */
@@ -404,9 +476,10 @@
   }
   .eb-finder-avatar-aurora-base {
     animation: none !important;
+    filter: brightness(1);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
   }
   .eb-finder-avatar-stack {
-    animation: none !important;
     filter: drop-shadow(0 0 24px rgba(212, 175, 55, 0.2));
     opacity: 1;
   }
@@ -419,6 +492,11 @@
   }
   .eb-home-sparkle {
     opacity: 0;
+  }
+  .eb-home-card-wrap::before {
+    animation: none !important;
+    transform: none;
+    opacity: 0.75;
   }
   .eb-intro-dot {
     animation: none;
@@ -614,22 +692,26 @@ body {
   background: rgba(255, 252, 245, 0.055);
 }
 
-/* 발견자 프로필: 원둘레 오로라 회전 + 은은한 펄스 */
+/* 발견자 프로필: 원둘레 오로라 회전 + 링 글로우 펄스 (부모 filter 애니는 자식 회전을 뭉개는 경우가 있어 링에만 적용) */
 .eb-finder-avatar-aurora-base {
   z-index: 0;
+  will-change: transform;
+  backface-visibility: hidden;
   background: conic-gradient(
     from 0deg,
-    rgba(212, 175, 55, 0.2) 0%,
-    rgba(255, 250, 235, 0.9) 12%,
-    rgba(160, 200, 170, 0.45) 24%,
-    rgba(212, 175, 55, 0.35) 38%,
-    rgba(245, 232, 200, 0.85) 52%,
-    rgba(120, 90, 55, 0.25) 68%,
-    rgba(212, 175, 55, 0.5) 82%,
-    rgba(255, 248, 220, 0.65) 92%,
-    rgba(212, 175, 55, 0.2) 100%
+    rgba(212, 175, 55, 0.65) 0%,
+    rgba(255, 252, 245, 1) 10%,
+    rgba(160, 210, 175, 0.75) 22%,
+    rgba(212, 175, 55, 0.55) 36%,
+    rgba(248, 236, 210, 0.95) 48%,
+    rgba(140, 100, 60, 0.45) 62%,
+    rgba(212, 175, 55, 0.8) 76%,
+    rgba(255, 248, 230, 0.9) 88%,
+    rgba(212, 175, 55, 0.65) 100%
   );
-  animation: eb-finder-aurora-rotate 9s linear infinite;
+  animation:
+    eb-finder-aurora-rotate 8s linear infinite,
+    eb-finder-ring-glow-pulse 2.4s ease-in-out infinite;
 }
 
 @keyframes eb-finder-aurora-rotate {
@@ -638,22 +720,27 @@ body {
   }
 }
 
-.eb-finder-avatar-stack {
-  animation: eb-finder-avatar-pulse 2.6s ease-in-out infinite;
-  filter: drop-shadow(0 0 22px rgba(212, 175, 55, 0.22)) drop-shadow(0 0 48px rgba(212, 175, 55, 0.08));
-}
-
-@keyframes eb-finder-avatar-pulse {
+@keyframes eb-finder-ring-glow-pulse {
   0%,
   100% {
-    filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.18)) drop-shadow(0 0 40px rgba(212, 175, 55, 0.06));
-    opacity: 1;
+    box-shadow:
+      0 0 16px rgba(212, 175, 55, 0.45),
+      0 0 32px rgba(255, 248, 220, 0.2),
+      inset 0 0 14px rgba(255, 250, 235, 0.15);
+    filter: brightness(0.95);
   }
   50% {
-    filter: drop-shadow(0 0 32px rgba(212, 175, 55, 0.42)) drop-shadow(0 0 58px rgba(180, 220, 170, 0.14))
-      drop-shadow(0 0 86px rgba(255, 248, 220, 0.08));
-    opacity: 0.94;
+    box-shadow:
+      0 0 28px rgba(212, 175, 55, 0.85),
+      0 0 52px rgba(180, 220, 175, 0.35),
+      0 0 72px rgba(255, 248, 220, 0.18),
+      inset 0 0 20px rgba(255, 252, 245, 0.28);
+    filter: brightness(1.12);
   }
+}
+
+.eb-finder-avatar-stack {
+  filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.28)) drop-shadow(0 0 44px rgba(212, 175, 55, 0.12));
 }
 
 /* Eternal Beam 상단 마크 — 오로라 텍스트 + 하향 스파클 */

@@ -30,7 +30,7 @@ export function EternalBeamMark({ align = "center", className = "" }: Props) {
   return (
     <div className={`${wrap} ${className}`.trim()}>
       <div
-        className={`relative pb-1 pt-1 ${align === "center" ? "flex w-full flex-col items-center" : ""}`}
+        className={`relative pb-1 pt-1 ${align === "center" ? "w-full min-w-0" : ""}`}
       >
         <div
           className="pointer-events-none absolute -bottom-1 left-0 right-0 h-[3.25rem] overflow-visible"
@@ -49,7 +49,9 @@ export function EternalBeamMark({ align = "center", className = "" }: Props) {
           ))}
         </div>
         <p
-          className={`eb-brand-title relative z-[1] uppercase ${align === "start" ? "w-full text-left" : "w-full text-center"}`}
+          className={`eb-brand-title relative z-[1] uppercase ${
+            align === "start" ? "w-full text-left" : "mx-auto block w-max max-w-full text-center"
+          }`}
         >
           Eternal Beam
         </p>

@@ -19,12 +19,17 @@ export function FinderTagExperience({ tagId, petName, ownerPhone, petImage }: Pr
 
   return (
     <div className="min-h-[50vh] space-y-9 pb-16 pt-4">
-      <EternalBeamMark />
+      <div className="w-full min-w-0 px-1">
+        <EternalBeamMark />
+      </div>
 
       <div className="flex flex-col items-center">
-        <div className="eb-finder-avatar-stack relative mx-auto size-[min(72vw,240px)] shrink-0 sm:size-[220px]">
-          <div className="eb-finder-avatar-aurora-base absolute inset-0 rounded-full motion-reduce:animate-none" aria-hidden />
-          <div className="absolute inset-[4px] z-[1] overflow-hidden rounded-full bg-[#0b0b0b] p-[3px]">
+        <div className="eb-finder-avatar-stack relative mx-auto size-[min(72vw,240px)] shrink-0 overflow-visible sm:size-[220px]">
+          <div
+            className="eb-finder-avatar-aurora-base absolute inset-0 rounded-full motion-reduce:animate-none"
+            aria-hidden
+          />
+          <div className="absolute inset-[5px] z-[1] overflow-hidden rounded-full bg-[#0b0b0b] p-[3px]">
             {petImage ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
