@@ -1,5 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "ETERNAL BEAM · 기억으로 이어지는 태그",
@@ -20,7 +26,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <div className="mx-auto min-h-screen w-full max-w-[480px] px-4 pb-10 pt-6 sm:px-5 sm:pt-10">
+        <div className="mx-auto min-h-screen w-full max-w-[480px] px-4 pb-[max(2.5rem,env(safe-area-inset-bottom,0px))] pt-[max(1.25rem,env(safe-area-inset-top,0px))] sm:px-5 sm:pt-10 sm:pb-10">
           {children}
         </div>
       </body>

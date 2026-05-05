@@ -120,7 +120,7 @@ export function HomeHero({ initialTagId }: Props) {
       </div>
 
       <main
-        className={`relative z-10 flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-10 transition-[opacity,transform] duration-[800ms] ease-out motion-reduce:transition-none ${
+        className={`relative z-10 flex min-h-[calc(100dvh-3.5rem)] flex-col items-center justify-start py-6 pb-14 sm:min-h-[calc(100vh-4rem)] sm:justify-center sm:py-10 sm:pb-10 transition-[opacity,transform] duration-[800ms] ease-out motion-reduce:transition-none ${
           loaded ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
         }`}
       >
@@ -137,7 +137,7 @@ export function HomeHero({ initialTagId }: Props) {
             </p>
 
             <h1
-              className="eb-hero-line mt-5 text-center text-[clamp(1.35rem,5.2vw,1.65rem)] font-light leading-[1.55] tracking-[-0.03em] text-[#faf6ef]"
+              className="eb-hero-line mt-5 text-center text-[clamp(1.35rem,5.2vw,1.65rem)] font-light leading-[1.55] tracking-[-0.03em] text-[#faf6ef] max-sm:[text-shadow:0_1px_22px_rgba(0,0,0,0.75)]"
               style={{ animationDelay: "0.65s" }}
             >
               그 아이의 기억이,
@@ -146,7 +146,7 @@ export function HomeHero({ initialTagId }: Props) {
             </h1>
 
             <p
-              className="eb-hero-line mx-auto mt-5 max-w-[340px] text-center text-[14px] leading-relaxed text-[var(--muted)]"
+              className="eb-hero-line mx-auto mt-5 max-w-[340px] text-center text-[14px] leading-relaxed text-[var(--muted)] max-sm:text-[#b0a697]"
               style={{ animationDelay: "1.25s" }}
             >
               이 태그를 통해, 당신의 아이와 연결이 시작됩니다
@@ -198,7 +198,7 @@ export function HomeHero({ initialTagId }: Props) {
                     if (!canNavigate) e.preventDefault();
                   }}
                   className={`eb-cta-primary flex min-h-[54px] w-full items-center justify-center rounded-2xl px-5 text-[15px] motion-safe:transition-transform ${
-                    !canNavigate ? "pointer-events-none opacity-40" : ""
+                    !canNavigate ? "pointer-events-none opacity-[0.52] sm:opacity-40" : ""
                   }`}
                 >
                   이 아이와 연결하기
@@ -211,7 +211,7 @@ export function HomeHero({ initialTagId }: Props) {
                     if (!canNavigate) e.preventDefault();
                   }}
                   className={`eb-cta-secondary flex min-h-[52px] w-full items-center justify-center rounded-2xl px-5 text-[14px] motion-safe:transition-transform ${
-                    !canNavigate ? "pointer-events-none opacity-40" : ""
+                    !canNavigate ? "pointer-events-none opacity-[0.52] sm:opacity-40" : ""
                   }`}
                 >
                   이미 연결되어 있다면 → 기억 열기

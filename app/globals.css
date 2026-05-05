@@ -85,6 +85,43 @@
   }
 }
 
+@media (max-width: 639px) {
+  .eb-aurora {
+    inset: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    background:
+      radial-gradient(ellipse 95% 58% at 50% 8%, rgba(240, 210, 120, 0.22), transparent 55%),
+      radial-gradient(ellipse 90% 56% at 18% 32%, rgba(212, 175, 55, 0.2), transparent 52%),
+      radial-gradient(ellipse 82% 50% at 82% 36%, rgba(220, 185, 120, 0.16), transparent 50%),
+      radial-gradient(ellipse 68% 44% at 50% 88%, rgba(160, 120, 75, 0.12), transparent 46%);
+  }
+  .eb-home-bottom-aurora {
+    opacity: 1;
+    background:
+      radial-gradient(ellipse 92% 56% at 50% 100%, rgba(232, 195, 95, 0.38), transparent 58%),
+      radial-gradient(ellipse 66% 42% at 22% 96%, rgba(140, 190, 150, 0.14), transparent 50%),
+      radial-gradient(ellipse 62% 40% at 82% 98%, rgba(220, 175, 110, 0.2), transparent 48%);
+  }
+  .eb-mist {
+    background: linear-gradient(
+      180deg,
+      rgba(5, 5, 5, 0.02) 0%,
+      transparent 22%,
+      rgba(8, 8, 8, 0.22) 52%,
+      rgba(10, 10, 10, 0.62) 100%
+    );
+  }
+  body {
+    background-attachment: scroll;
+    background:
+      radial-gradient(ellipse 130% 60% at 50% -8%, rgba(212, 175, 55, 0.22), transparent 55%),
+      radial-gradient(ellipse 75% 50% at 8% 42%, rgba(190, 155, 95, 0.12), transparent 48%),
+      radial-gradient(ellipse 70% 48% at 92% 38%, rgba(200, 165, 105, 0.1), transparent 46%),
+      linear-gradient(180deg, #0e0c0a 0%, #151311 40%, #0a0908 100%);
+  }
+}
+
 .eb-mist {
   position: fixed;
   inset: 0;
@@ -459,10 +496,18 @@
   }
   .eb-aurora {
     transform: none;
+    background:
+      radial-gradient(ellipse 86% 54% at 24% 30%, rgba(212, 175, 55, 0.16), transparent 54%),
+      radial-gradient(ellipse 74% 48% at 78% 58%, rgba(185, 148, 100, 0.12), transparent 50%),
+      radial-gradient(ellipse 62% 42% at 52% 84%, rgba(130, 95, 65, 0.1), transparent 46%);
   }
   .eb-home-bottom-aurora {
-    opacity: 0.55;
+    opacity: 0.78;
     transform: none;
+    background:
+      radial-gradient(ellipse 90% 54% at 50% 100%, rgba(212, 175, 55, 0.28), transparent 56%),
+      radial-gradient(ellipse 64% 40% at 22% 96%, rgba(140, 190, 150, 0.14), transparent 50%),
+      radial-gradient(ellipse 60% 38% at 82% 98%, rgba(200, 145, 95, 0.16), transparent 48%);
   }
   .eb-home-sparkle {
     opacity: 0;
@@ -487,10 +532,12 @@
   .eb-brand-title {
     animation: none;
     color: #e8d5a3;
+    -webkit-text-fill-color: currentColor;
     background: none;
     -webkit-background-clip: unset;
     background-clip: unset;
     filter: none;
+    transform: none;
   }
   .eb-brand-sparkle {
     animation: none !important;
@@ -625,6 +672,27 @@ body {
   transform: scale(0.985);
 }
 
+@media (max-width: 639px) {
+  .eb-cta-primary {
+    background: linear-gradient(155deg, #c9a21e 0%, #dbb82a 28%, #e8cc4a 55%, #f5e59a 100%);
+    color: #141007;
+    border: 1px solid rgba(255, 236, 190, 0.55);
+    box-shadow:
+      0 0 0 1px rgba(180, 145, 40, 0.35),
+      0 3px 12px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 252, 235, 0.45),
+      0 0 40px rgba(212, 175, 55, 0.28);
+  }
+  .eb-cta-secondary {
+    border-color: rgba(212, 175, 55, 0.44);
+    background: rgba(255, 252, 245, 0.1);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.35),
+      0 4px 18px rgba(0, 0, 0, 0.35);
+    color: rgba(252, 248, 242, 0.98);
+  }
+}
+
 .eb-intro-screen {
   background: #0b0b0b;
 }
@@ -726,6 +794,8 @@ body {
   letter-spacing: 0.42em;
   text-indent: 0.42em;
   line-height: 1.35;
+  color: #dcb874;
+  -webkit-text-fill-color: transparent;
   background: linear-gradient(
     100deg,
     #6b5520 0%,
@@ -739,9 +809,11 @@ body {
   background-size: 240% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
   filter: drop-shadow(0 0 14px rgba(212, 175, 55, 0.25));
   animation: eb-brand-shimmer 5.8s ease-in-out infinite;
+  /* Safari / 모바일 WebKit 레이어 이슈 완화 */
+  -webkit-font-smoothing: antialiased;
+  transform: translateZ(0);
 }
 
 /* 가운데 정렬: 자간 때문에 오른쪽이 비어 보이므로 우측 패딩으로 광학적 중앙 맞춤 */
@@ -752,6 +824,15 @@ body {
   box-sizing: border-box;
 }
 
+@supports not (-webkit-background-clip: text) {
+  .eb-brand-title {
+    color: #e8d5a3;
+    -webkit-text-fill-color: currentColor;
+    background: none;
+    animation: none;
+  }
+}
+
 @keyframes eb-brand-shimmer {
   0%,
   100% {
@@ -759,6 +840,23 @@ body {
   }
   50% {
     background-position: 100% 50%;
+  }
+}
+
+/* 모바일(특히 삼성 인터넷): background-clip:text + 투명 채움 조합이 깨져 타이틀이 먹색으로 보임 → 실색 골드 + 글로우 */
+@media (max-width: 639px) {
+  .eb-brand-title {
+    color: #f2d878;
+    -webkit-text-fill-color: currentColor;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+    filter: none;
+    text-shadow:
+      0 0 20px rgba(212, 175, 55, 0.55),
+      0 0 40px rgba(220, 185, 90, 0.28),
+      0 1px 3px rgba(0, 0, 0, 0.9);
+    animation: none;
   }
 }
 
