@@ -160,7 +160,15 @@ export function LiquidGoldCardFrame({ children, className = "", style }: Props) 
           b -= chrom * ca * 0.02;
           gCol += holoMix * (purple.g - gCol) * 0.08;
 
-          const intensity = Math.min(1.45, bandDiffuse * (0.65 + 0.85 * (0.5 + 0.5 * flow)) + bandCore * 1.35);
+          const travel = ang - tSec * 1.42;
+          const rimSweep =
+            Math.pow(Math.max(0, Math.cos(travel)), 14) * 1.55 +
+            Math.pow(Math.max(0, Math.cos(travel * 1.25 + 2.05)), 9) * 0.65;
+
+          let intensity = Math.min(
+            1.55,
+            bandDiffuse * (0.65 + 0.85 * (0.5 + 0.5 * flow)) + bandCore * 1.35 + rimSweep * bandDiffuse * 0.95,
+          );
 
           const edgeFade = smoothstep(5, 0, Math.max(0, -sd));
           const a = intensity * (0.35 + 0.55 * smoothstep(0, 1.5, innerDist)) * 255 * (0.5 + 0.5 * edgeFade);
@@ -274,9 +282,26 @@ export function LiquidGoldCardFrame({ children, className = "", style }: Props) 
         />
       </div>
 
-      <div className="eb-home-card pointer-events-auto absolute inset-[3px] z-[2] isolate rounded-[21px] px-6 py-8 sm:px-8 sm:py-9">
-        {children}
-      </div>
+      <motion.div
+        className="eb-home-card pointer-events-auto absolute inset-[3px] z-[2] isolate overflow-hidden rounded-[21px] px-6 py-8 sm:px-8 sm:py-9"
+        animate={
+          reduce
+            ? {}
+            : {
+                boxShadow: [
+                  "0 0 0 1px rgba(0,0,0,0.45) inset, 0 2px 0 rgba(255,248,230,0.05) inset, inset 0 -2px 0 rgba(0,0,0,0.35), inset 0 0 28px rgba(212,175,55,0.06)",
+                  "0 0 0 1px rgba(0,0,0,0.45) inset, 0 2px 0 rgba(255,252,245,0.1) inset, inset 0 -2px 0 rgba(0,0,0,0.35), inset 0 0 44px rgba(212,175,55,0.12)",
+                  "0 0 0 1px rgba(0,0,0,0.45) inset, 0 2px 0 rgba(255,248,230,0.05) inset, inset 0 -2px 0 rgba(0,0,0,0.35), inset 0 0 28px rgba(212,175,55,0.06)",
+                ],
+              }
+        }
+        transition={reduce ? { duration: 0 } : { duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="eb-home-glass-rim absolute inset-0 rounded-[inherit]" aria-hidden>
+          <div className="eb-home-glass-rim-rotor" />
+        </div>
+        <div className="relative z-[3]">{children}</div>
+      </motion.div>
     </motion.div>
   );
 }
