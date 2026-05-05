@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { EternalBeamMark } from "@/components/EternalBeamMark";
+import { LiquidGoldCardFrame } from "@/components/LiquidGoldCardFrame";
 
 type Props = {
   initialTagId?: string;
@@ -158,11 +159,7 @@ export function HomeHero({ initialTagId }: Props) {
               이 작은 태그는, 한 아이의 기억으로 이어집니다
             </p>
 
-            <div
-              className="eb-hero-line eb-home-card-wrap mx-auto mt-10"
-              style={{ animationDelay: "2.35s" }}
-            >
-              <div className="eb-home-card px-6 py-8 sm:px-8 sm:py-9">
+            <LiquidGoldCardFrame className="eb-hero-line mx-auto mt-10" style={{ animationDelay: "2.35s" }}>
               <p className="text-center text-[13px] leading-relaxed text-[#b8ae9e]">
                 휴대폰으로 태그의 QR을 찍으면
                 <br />
@@ -226,8 +223,7 @@ export function HomeHero({ initialTagId }: Props) {
                   위에 이름을 적으면 버튼이 비춥니다
                 </p>
               ) : null}
-              </div>
-            </div>
+            </LiquidGoldCardFrame>
           </div>
         ) : null}
       </main>
