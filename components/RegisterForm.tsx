@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { EternalBeamMark } from "@/components/EternalBeamMark";
 import { ProfilePhotoUpload } from "@/components/ProfilePhotoUpload";
+import { rememberOwnerKey } from "@/lib/owner-key-storage";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input, Textarea } from "@/components/ui/Input";
@@ -45,6 +46,16 @@ export function RegisterForm({
 
   const onSubmit = useCallback(async () => {
     setErr(null);
+    const name = petName.trim();
+    const phone = ownerPhone.trim();
+    if (!name || !phone) {
+      setErr("아이 이름과 보호자 연락처는 필수입니다.");
+      return;
+    }
+    if (!imageUrl) {
+      setErr("대표 사진을 업로드해 주세요. 업로드에 실패했다면 사진을 다시 선택해 주세요.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await fetch("/api/pet/register", {
@@ -67,6 +78,7 @@ export function RegisterForm({
         throw new Error(parts.length ? parts.join(" — ") : "저장에 실패했습니다.");
       }
       const returnedKey = typeof body?.ownerKey === "string" ? body.ownerKey : ownerKeyForEdit;
+      if (returnedKey) rememberOwnerKey(tagId, returnedKey);
       const qs = returnedKey ? `?owner=${encodeURIComponent(returnedKey)}` : "";
       /** 전체 로드로 최신 서버 HTML·번들을 받게 함(클라이언트 전환만 하면 예전 화면이 남는 경우 방지) */
       window.location.assign(`/tag/${encodeURIComponent(tagId)}${qs}`);

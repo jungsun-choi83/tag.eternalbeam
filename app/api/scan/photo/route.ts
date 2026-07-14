@@ -52,12 +52,7 @@ export async function POST(req: NextRequest) {
     }
 
     const supabase = getSupabaseAdmin();
-    try {
-      await ensurePetAssetsBucket(supabase, bucket);
-    } catch (be) {
-      const msg = be instanceof Error ? be.message : String(be);
-      return NextResponse.json({ error: "Storage 준비 실패", detail: msg }, { status: 500 });
-    }
+    await ensurePetAssetsBucket(supabase, bucket);
 
     const prefix = safeTagPathSegment(tagId);
     const id = crypto.randomUUID();

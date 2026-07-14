@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ensurePetAssetsBucket } from "@/lib/ensure-pet-bucket";
+import { ensurePetAssetsBucket, storageUploadErrorHint } from "@/lib/ensure-pet-bucket";
+import { safeTagPathSegment } from "@/lib/safe-tag-path";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-function safePrefix(tagId: string) {
-  const t = tagId.trim() || "anon";
-  return t.replace(/[^a-zA-Z0-9-_]/g, "_").slice(0, 96) || "tag";
-}
+const MAX_BYTES = 12 * 1024 * 1024;
 
 /** 대표 사진 1장만 업로드 (누끼 없음) */
 export async function POST(req: NextRequest) {
@@ -28,26 +26,32 @@ export async function POST(req: NextRequest) {
     if (!(file instanceof Blob) || file.size === 0) {
       return NextResponse.json({ error: "file is required" }, { status: 400 });
     }
-
-    const supabase = getSupabaseAdmin();
-    try {
-      await ensurePetAssetsBucket(supabase, bucket);
-    } catch (be) {
-      const msg = be instanceof Error ? be.message : String(be);
-      return NextResponse.json({ error: "Storage 준비 실패", detail: msg }, { status: 500 });
+    if (file.size > MAX_BYTES) {
+      return NextResponse.json({ error: "파일이 너무 큽니다. (최대 12MB)" }, { status: 413 });
     }
 
+    const supabase = getSupabaseAdmin();
+    await ensurePetAssetsBucket(supabase, bucket);
+
     const buf = Buffer.from(await file.arrayBuffer());
-    const mime = (file as File).type || "image/jpeg";
+    const rawType = ((file as File).type || "").trim();
+    const mime = rawType.split(";")[0]?.trim() || "image/jpeg";
+    if (!mime.startsWith("image/")) {
+      return NextResponse.json({ error: "이미지 파일만 업로드할 수 있습니다." }, { status: 400 });
+    }
     const ext = mime.includes("png") ? "png" : mime.includes("webp") ? "webp" : "jpg";
-    const path = `${safePrefix(tagId)}/profile-${Date.now()}.${ext}`;
+    const path = `${safeTagPathSegment(tagId)}/profile-${Date.now()}.${ext}`;
 
     const { error } = await supabase.storage.from(bucket).upload(path, buf, {
       contentType: mime,
       upsert: true,
     });
     if (error) {
-      return NextResponse.json({ error: "업로드 실패", detail: error.message }, { status: 500 });
+      const hint = storageUploadErrorHint(error.message);
+      return NextResponse.json(
+        { error: "업로드 실패", detail: error.message, ...(hint ? { hint } : {}) },
+        { status: 500 },
+      );
     }
     const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
     return NextResponse.json({ imageUrl: pub.publicUrl });

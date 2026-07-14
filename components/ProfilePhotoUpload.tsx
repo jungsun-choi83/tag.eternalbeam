@@ -14,6 +14,7 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
   const [local, setLocal] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [drag, setDrag] = useState(false);
+  const [uploadErr, setUploadErr] = useState<string | null>(null);
 
   useEffect(() => {
     if (imageUrl && local) {
@@ -32,6 +33,7 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
     async (file: File) => {
       if (!file.type.startsWith("image/") || disabled) return;
       setBusy(true);
+      setUploadErr(null);
       setLocal((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return URL.createObjectURL(file);
@@ -41,11 +43,23 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
         fd.append("file", file);
         fd.append("tagId", tagId);
         const res = await fetch("/api/pet/upload-profile", { method: "POST", body: fd });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error ?? "업로드 실패");
-        onImageUrl(String(data.imageUrl ?? ""));
-      } catch {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          const parts = [data?.error, data?.detail, data?.hint].filter(
+            (x: unknown) => typeof x === "string" && x,
+          );
+          throw new Error(parts.length ? parts.join(" — ") : "업로드 실패");
+        }
+        const url = String(data.imageUrl ?? "");
+        if (!url) throw new Error("업로드 응답에 이미지 URL이 없습니다.");
+        onImageUrl(url);
+      } catch (e) {
         onImageUrl(null);
+        setLocal((prev) => {
+          if (prev) URL.revokeObjectURL(prev);
+          return null;
+        });
+        setUploadErr(e instanceof Error ? e.message : "업로드 실패");
       } finally {
         setBusy(false);
       }
@@ -110,6 +124,9 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
           </div>
         )}
       </button>
+      {uploadErr ? (
+        <p className="text-sm text-rose-200/90">{uploadErr}</p>
+      ) : null}
     </div>
   );
 }

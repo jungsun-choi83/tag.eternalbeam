@@ -119,3 +119,24 @@ create index if not exists messages_created_at_idx on public.messages (created_a
 insert into storage.buckets (id, name, public)
 values ('pet-assets', 'pet-assets', true)
 on conflict (id) do update set public = excluded.public;
+
+-- Storage RLS: pet-assets 읽기·업로드 (service_role은 RLS를 우회하지만 anon 업로드 폴백용)
+drop policy if exists "pet-assets public read" on storage.objects;
+create policy "pet-assets public read"
+  on storage.objects for select
+  using (bucket_id = 'pet-assets');
+
+drop policy if exists "pet-assets insert" on storage.objects;
+create policy "pet-assets insert"
+  on storage.objects for insert
+  with check (bucket_id = 'pet-assets');
+
+drop policy if exists "pet-assets update" on storage.objects;
+create policy "pet-assets update"
+  on storage.objects for update
+  using (bucket_id = 'pet-assets');
+
+drop policy if exists "pet-assets delete" on storage.objects;
+create policy "pet-assets delete"
+  on storage.objects for delete
+  using (bucket_id = 'pet-assets');

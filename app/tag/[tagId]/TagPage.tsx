@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { FinderTagExperience } from "@/components/FinderTagExperience";
 import { FinderTagFallback } from "@/components/FinderTagFallback";
+import { OwnerKeyAutoRedirect } from "@/components/OwnerKeyAutoRedirect";
 import { OwnerTagExperience } from "@/components/OwnerTagExperience";
 import { TagEntryShell } from "@/components/TagEntryShell";
 import { TagScanEffects } from "@/components/TagScanEffects";
@@ -72,6 +74,9 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...`}
 
   return (
     <main className="animate-fade-in space-y-6 py-6">
+      <Suspense fallback={null}>
+        <OwnerKeyAutoRedirect tagId={tagId} />
+      </Suspense>
       <TagScanEffects tagId={tagId} logView={logView} />
       <TagEntryShell>
         {isOwner && ownerKey && summary ? (
