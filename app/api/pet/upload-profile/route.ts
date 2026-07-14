@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ensurePetAssetsBucket, storageUploadErrorHint } from "@/lib/ensure-pet-bucket";
+import { storageUploadErrorHint } from "@/lib/ensure-pet-bucket";
 import { safeTagPathSegment } from "@/lib/safe-tag-path";
-import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase-admin";
+import { isSupabaseConfigured } from "@/lib/supabase-admin";
+import { uploadStorageObject } from "@/lib/supabase-storage";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -30,9 +31,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "파일이 너무 큽니다. (최대 12MB)" }, { status: 413 });
     }
 
-    const supabase = getSupabaseAdmin();
-    await ensurePetAssetsBucket(supabase, bucket);
-
     const buf = Buffer.from(await file.arrayBuffer());
     const rawType = ((file as File).type || "").trim();
     const mime = rawType.split(";")[0]?.trim() || "image/jpeg";
@@ -42,19 +40,20 @@ export async function POST(req: NextRequest) {
     const ext = mime.includes("png") ? "png" : mime.includes("webp") ? "webp" : "jpg";
     const path = `${safeTagPathSegment(tagId)}/profile-${Date.now()}.${ext}`;
 
-    const { error } = await supabase.storage.from(bucket).upload(path, buf, {
+    const uploaded = await uploadStorageObject({
+      bucket,
+      path,
+      body: buf,
       contentType: mime,
-      upsert: true,
     });
-    if (error) {
-      const hint = storageUploadErrorHint(error.message);
+    if (!uploaded.ok) {
+      const hint = storageUploadErrorHint(uploaded.message);
       return NextResponse.json(
-        { error: "업로드 실패", detail: error.message, ...(hint ? { hint } : {}) },
+        { error: "업로드 실패", detail: uploaded.message, ...(hint ? { hint } : {}) },
         { status: 500 },
       );
     }
-    const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
-    return NextResponse.json({ imageUrl: pub.publicUrl });
+    return NextResponse.json({ imageUrl: uploaded.publicUrl });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ensurePetAssetsBucket } from "@/lib/ensure-pet-bucket";
+import { storageUploadErrorHint } from "@/lib/ensure-pet-bucket";
 import { getPet } from "@/lib/pet";
 import { isPetRegistered } from "@/lib/pet-helpers";
 import { safeTagPathSegment } from "@/lib/safe-tag-path";
 import { getSupabaseAdmin, isSupabaseConfigured } from "@/lib/supabase-admin";
+import { uploadStorageObject } from "@/lib/supabase-storage";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -51,26 +52,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "이미지 파일만 업로드할 수 있습니다." }, { status: 400 });
     }
 
-    const supabase = getSupabaseAdmin();
-    await ensurePetAssetsBucket(supabase, bucket);
-
     const prefix = safeTagPathSegment(tagId);
     const id = crypto.randomUUID();
     const ext = extFromMime(contentType);
     const path = `${prefix}/finder-photo-${id}.${ext}`;
     const buf = Buffer.from(await file.arrayBuffer());
 
-    const { error: upErr } = await supabase.storage.from(bucket).upload(path, buf, {
+    const uploaded = await uploadStorageObject({
+      bucket,
+      path,
+      body: buf,
       contentType,
       upsert: false,
     });
-    if (upErr) {
-      return NextResponse.json({ error: "업로드 실패", detail: upErr.message }, { status: 500 });
+    if (!uploaded.ok) {
+      const hint = storageUploadErrorHint(uploaded.message);
+      return NextResponse.json(
+        { error: "업로드 실패", detail: uploaded.message, ...(hint ? { hint } : {}) },
+        { status: 500 },
+      );
     }
+    const publicUrl = uploaded.publicUrl;
 
-    const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
-    const publicUrl = pub.publicUrl;
-
+    const supabase = getSupabaseAdmin();
     const { error: dbErr } = await supabase.from("finder_photos").insert({
       tag_id: tagId,
       storage_path: path,

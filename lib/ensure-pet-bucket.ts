@@ -23,8 +23,11 @@ export async function ensurePetAssetsBucket(supabase: SupabaseClient, bucket: st
 
 export function storageUploadErrorHint(message: string): string | undefined {
   const m = message.toLowerCase();
-  if (m.includes("fetch failed") || m.includes("network")) {
-    return "Supabase Storage 연결에 실패했습니다. 프로젝트가 일시중지(paused) 상태가 아닌지, Vercel의 NEXT_PUBLIC_SUPABASE_URL·SUPABASE_SERVICE_ROLE_KEY가 맞는지 확인하세요.";
+  if (m.includes("next_public_supabase_url") || m.includes("형식이 올바르지")) {
+    return "Vercel의 NEXT_PUBLIC_SUPABASE_URL을 https://xxxx.supabase.co 형식으로 맞춰 주세요.";
+  }
+  if (m.includes("fetch failed") || m.includes("network") || m.includes("econnrefused")) {
+    return "Supabase Storage 연결 실패입니다. (1) Supabase 프로젝트가 Paused가 아닌지 (2) Vercel에 SUPABASE_SERVICE_ROLE_KEY가 service_role 키인지 (3) URL이 올바른지 확인하세요.";
   }
   if (m.includes("bucket") && (m.includes("not found") || m.includes("does not exist"))) {
     return 'Supabase 대시보드 → Storage에서 "pet-assets" public 버킷을 만든 뒤 다시 시도하세요.';
