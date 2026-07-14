@@ -165,7 +165,7 @@ export function LiquidGoldCardFrame({ children, className = "", style }: Props) 
             Math.pow(Math.max(0, Math.cos(travel)), 14) * 1.55 +
             Math.pow(Math.max(0, Math.cos(travel * 1.25 + 2.05)), 9) * 0.65;
 
-          let intensity = Math.min(
+          const intensity = Math.min(
             1.55,
             bandDiffuse * (0.65 + 0.85 * (0.5 + 0.5 * flow)) + bandCore * 1.35 + rimSweep * bandDiffuse * 0.95,
           );
