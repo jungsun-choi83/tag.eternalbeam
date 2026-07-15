@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { storageUploadErrorHint } from "@/lib/ensure-pet-bucket";
 import { safeTagPathSegment } from "@/lib/safe-tag-path";
 import { isSupabaseConfigured } from "@/lib/supabase-admin";
-import { uploadStorageObject } from "@/lib/supabase-storage";
+import {
+  bufferToDataUrl,
+  isStorageNetworkError,
+  uploadStorageObject,
+} from "@/lib/supabase-storage";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -47,6 +51,15 @@ export async function POST(req: NextRequest) {
       contentType: mime,
     });
     if (!uploaded.ok) {
+      const dataUrl = isStorageNetworkError(uploaded.message) ? bufferToDataUrl(buf, mime) : null;
+      if (dataUrl) {
+        return NextResponse.json({
+          imageUrl: dataUrl,
+          storageFallback: true,
+          warning:
+            "클라우드 저장소(Supabase)에 연결되지 않아 사진을 임시 방식으로 저장했습니다. 등록은 가능하지만, Vercel의 SUPABASE 설정을 확인해 주세요.",
+        });
+      }
       const hint = storageUploadErrorHint(uploaded.message);
       return NextResponse.json(
         { error: "업로드 실패", detail: uploaded.message, ...(hint ? { hint } : {}) },

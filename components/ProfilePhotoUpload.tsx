@@ -1,5 +1,6 @@
 "use client";
 
+import { compressImageForUpload } from "@/lib/compress-image-client";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type Props = {
@@ -15,6 +16,7 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
   const [busy, setBusy] = useState(false);
   const [drag, setDrag] = useState(false);
   const [uploadErr, setUploadErr] = useState<string | null>(null);
+  const [uploadWarn, setUploadWarn] = useState<string | null>(null);
 
   useEffect(() => {
     if (imageUrl && local) {
@@ -34,13 +36,15 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
       if (!file.type.startsWith("image/") || disabled) return;
       setBusy(true);
       setUploadErr(null);
+      setUploadWarn(null);
+      const prepared = await compressImageForUpload(file);
       setLocal((prev) => {
         if (prev) URL.revokeObjectURL(prev);
-        return URL.createObjectURL(file);
+        return URL.createObjectURL(prepared);
       });
       try {
         const fd = new FormData();
-        fd.append("file", file);
+        fd.append("file", prepared);
         fd.append("tagId", tagId);
         const res = await fetch("/api/pet/upload-profile", { method: "POST", body: fd });
         const data = await res.json().catch(() => ({}));
@@ -53,6 +57,9 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
         const url = String(data.imageUrl ?? "");
         if (!url) throw new Error("업로드 응답에 이미지 URL이 없습니다.");
         onImageUrl(url);
+        if (data.storageFallback && typeof data.warning === "string") {
+          setUploadWarn(data.warning);
+        }
       } catch (e) {
         onImageUrl(null);
         setLocal((prev) => {
@@ -124,6 +131,9 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
           </div>
         )}
       </button>
+      {uploadWarn ? (
+        <p className="text-sm text-amber-200/90">{uploadWarn}</p>
+      ) : null}
       {uploadErr ? (
         <p className="text-sm text-rose-200/90">{uploadErr}</p>
       ) : null}
