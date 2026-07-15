@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { EternalBeamMark } from "@/components/EternalBeamMark";
 import { LiquidGoldCardFrame } from "@/components/LiquidGoldCardFrame";
+import { SiteFooter } from "@/components/SiteFooter";
 
 type Props = {
   initialTagId?: string;
@@ -181,11 +182,13 @@ export function HomeHero({ initialTagId }: Props) {
                     필요할 때만
                   </span>
                   <input
+                    type="text"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                     placeholder="이 아이를 부르는 이름"
                     autoComplete="off"
-                    className="min-h-[52px] w-full rounded-xl border border-[#d4af37]/18 bg-[#080807]/80 px-4 text-[15px] text-[#f5f0e8] outline-none transition placeholder:text-[#5c574e] focus:border-[#d4af37]/45 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)]"
+                    enterKeyHint="done"
+                    className="pointer-events-auto relative z-[2] min-h-[52px] w-full rounded-xl border border-[#d4af37]/18 bg-[#080807]/80 px-4 text-[15px] text-[#f5f0e8] outline-none transition placeholder:text-[#5c574e] focus:border-[#d4af37]/45 focus:shadow-[0_0_0_3px_rgba(212,175,55,0.12)]"
                   />
                 </label>
               </div>
@@ -224,6 +227,8 @@ export function HomeHero({ initialTagId }: Props) {
                 </p>
               ) : null}
             </LiquidGoldCardFrame>
+
+            <SiteFooter />
           </div>
         ) : null}
       </main>

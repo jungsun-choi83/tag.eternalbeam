@@ -1,20 +1,28 @@
 import Link from "next/link";
 
+/** 페이지 맨 하단 법적·사업자 고지 */
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-white/[0.06] pt-8 pb-2 text-center text-[11px] leading-relaxed text-[#6e685e]">
-      <p className="font-medium text-[#9a9288]">주식회사 토일렛 아카이브</p>
-      <p className="mt-2">서비스명 ETERNAL BEAM · tag.eternalbeam.com</p>
-      <nav className="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[#8a8278]">
-        <Link href="/privacy" className="underline decoration-white/15 underline-offset-4 hover:text-[#d4c4a4]">
+    <footer className="mt-16 border-t border-white/[0.05] pt-8 pb-4 text-center text-[10px] leading-relaxed text-[#5c574e]">
+      <nav className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[#7a7268]">
+        <Link href="/privacy" className="underline decoration-white/12 underline-offset-4 hover:text-[#b8ae9e]">
           개인정보처리방침
         </Link>
         <span aria-hidden className="text-white/10">
-          |
+          ·
         </span>
-        <span>클라우드 저장: Supabase (해외)</span>
+        <span>클라우드 저장(Supabase·해외) 처리위탁</span>
       </nav>
-      <p className="mt-3 text-[10px] text-[#5c574e]">© 주식회사 토일렛 아카이브. All rights reserved.</p>
+      <p className="mt-4 text-[#6e685e]">
+        서비스 이용·기기 권한(카메라·위치·알림) 사용 시{" "}
+        <Link href="/privacy" className="underline decoration-white/10 underline-offset-2">
+          개인정보처리방침
+        </Link>
+        에 동의한 것으로 간주됩니다.
+      </p>
+      <p className="mt-5 font-medium text-[#8a8278]">주식회사 토일렛 아카이브</p>
+      <p className="mt-1">ETERNAL BEAM · tag.eternalbeam.com</p>
+      <p className="mt-2 text-[#4a453d]">© 주식회사 토일렛 아카이브</p>
     </footer>
   );
 }
