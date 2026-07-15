@@ -7,10 +7,11 @@ type Props = {
   tagId: string;
   imageUrl: string | null;
   onImageUrl: (url: string | null) => void;
+  onFileReady?: (file: File | null) => void;
   disabled?: boolean;
 };
 
-export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Props) {
+export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, onFileReady, disabled }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [local, setLocal] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -38,6 +39,7 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
       setUploadErr(null);
       setUploadWarn(null);
       const prepared = await compressImageForUpload(file);
+      onFileReady?.(prepared);
       setLocal((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return URL.createObjectURL(prepared);
@@ -62,6 +64,7 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
         }
       } catch (e) {
         onImageUrl(null);
+        onFileReady?.(null);
         setLocal((prev) => {
           if (prev) URL.revokeObjectURL(prev);
           return null;
@@ -71,7 +74,7 @@ export function ProfilePhotoUpload({ tagId, imageUrl, onImageUrl, disabled }: Pr
         setBusy(false);
       }
     },
-    [disabled, onImageUrl, tagId],
+    [disabled, onFileReady, onImageUrl, tagId],
   );
 
   const preview = imageUrl ?? local;

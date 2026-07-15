@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { EternalBeamMark } from "@/components/EternalBeamMark";
 import { ProfilePhotoUpload } from "@/components/ProfilePhotoUpload";
 import { rememberOwnerKey } from "@/lib/owner-key-storage";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input, Textarea } from "@/components/ui/Input";
+
+async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
+  const res = await fetch(dataUrl);
+  return res.blob();
+}
 
 export function RegisterForm({
   tagId,
@@ -24,6 +29,7 @@ export function RegisterForm({
   const [notifyOnScan, setNotifyOnScan] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const profileFileRef = useRef<File | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -58,23 +64,52 @@ export function RegisterForm({
     }
     setLoading(true);
     try {
-      const res = await fetch("/api/pet/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tagId,
-          petName,
-          ownerPhone,
-          ownerName: ownerName.trim() || undefined,
-          description,
-          petImage: imageUrl,
-          notify_on_scan: notifyOnScan,
-          ...(ownerKeyForEdit ? { ownerKey: ownerKeyForEdit } : {}),
-        }),
-      });
+      const useMultipart =
+        Boolean(profileFileRef.current) ||
+        (imageUrl?.startsWith("data:") ?? false);
+
+      let res: Response;
+      if (useMultipart) {
+        const fd = new FormData();
+        fd.append("tagId", tagId);
+        fd.append("petName", name);
+        fd.append("ownerPhone", phone);
+        fd.append("description", description);
+        if (ownerName.trim()) fd.append("ownerName", ownerName.trim());
+        fd.append("notify_on_scan", notifyOnScan ? "true" : "false");
+        if (ownerKeyForEdit) fd.append("ownerKey", ownerKeyForEdit);
+
+        if (profileFileRef.current) {
+          fd.append("file", profileFileRef.current);
+        } else if (imageUrl?.startsWith("data:")) {
+          const blob = await dataUrlToBlob(imageUrl);
+          fd.append("file", blob, "profile.jpg");
+        } else if (imageUrl) {
+          fd.append("petImage", imageUrl);
+        }
+
+        res = await fetch("/api/pet/register", { method: "POST", body: fd });
+      } else {
+        res = await fetch("/api/pet/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            tagId,
+            petName: name,
+            ownerPhone: phone,
+            ownerName: ownerName.trim() || undefined,
+            description,
+            petImage: imageUrl,
+            notify_on_scan: notifyOnScan,
+            ...(ownerKeyForEdit ? { ownerKey: ownerKeyForEdit } : {}),
+          }),
+        });
+      }
       const body = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const parts = [body?.error, body?.hint].filter((x: unknown) => typeof x === "string" && x);
+        const parts = [body?.error, body?.detail, body?.hint].filter(
+          (x: unknown) => typeof x === "string" && x,
+        );
         throw new Error(parts.length ? parts.join(" — ") : "저장에 실패했습니다.");
       }
       const returnedKey = typeof body?.ownerKey === "string" ? body.ownerKey : ownerKeyForEdit;
@@ -145,6 +180,9 @@ export function RegisterForm({
           tagId={tagId}
           imageUrl={imageUrl}
           onImageUrl={setImageUrl}
+          onFileReady={(file) => {
+            profileFileRef.current = file;
+          }}
           disabled={loading}
         />
 

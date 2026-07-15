@@ -39,8 +39,8 @@ export function isStorageNetworkError(message: string): boolean {
   );
 }
 
-/** Storage 불가 시 등록은 되게 하는 임시 data URL (최대 ~900KB 원본) */
-export function bufferToDataUrl(buf: Buffer, mime: string, maxBytes = 900_000): string | null {
+/** Storage 불가 시 등록은 되게 하는 임시 data URL (최대 ~480KB 원본) */
+export function bufferToDataUrl(buf: Buffer, mime: string, maxBytes = 480_000): string | null {
   if (buf.length > maxBytes) return null;
   return `data:${mime};base64,${buf.toString("base64")}`;
 }
